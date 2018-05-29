@@ -13,7 +13,7 @@ from synapsedb.synapses.postgis import Box3D
 import ndviz
 try:
     from urllib import parse
-except:
+except ImportError:
     import urlparse as parse
 # import ndviz
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
