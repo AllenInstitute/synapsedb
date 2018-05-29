@@ -1,0 +1,17 @@
+
+from synapsedb.volumes.models import Volume, VolumeLink, DataSet
+from synapsedb import db
+
+dataset = DataSet.query.filter_by(name='M247514_Rorb_1')[0]
+volume = Volume.query.filter_by(name='BIG ALIGN LENS', dataset=dataset).first()
+link_url='''http://ibs-forrestc-ux1.corp.alleninstitute.org:8002/#!{'layers':{'PSD95':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/BIGALIGN_LENS_Session1/PSD95'_'blend':'additive'_'color':1_'max':0.09}_'DAPI1':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/BIGALIGN_LENS_Session1/DAPI1'_'blend':'additive'_'color':4_'min':0.27_'max':0.46}_'MBP':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/BIGALIGN_LENS_Session3/MBP'_'blend':'additive'_'color':5_'max':0.12}_'EM':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/BIGALIGN_LENS_EMclahe_all'_'blend':'additive'}}_'navigation':{'pose':{'position':{'voxelSize':[3_3_50]_'voxelCoordinates':[134730.15625_58191.41796875_25]}}_'zoomFactor':757.7587841148106}}'''
+link = VolumeLink(name="Overview",link=link_url,volume=volume)
+db.session.add(link)
+site_3_vol= Volume.query.filter_by(name='Site3', dataset=dataset).first()
+link_url_overview = '''http://ibs-forrestc-ux1.corp.alleninstitute.org:8002/#!{'layers':{'PSD95':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_LENS_Session1/PSD95'_'blend':'additive'_'color':1_'max':0.15}_'DAPI1':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_LENS_Session1/DAPI1'_'blend':'additive'_'color':4_'max':0.29}_'MBP':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_LENS_Session3/MBP'_'blend':'additive'_'color':5_'max':0.27}_'EM':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_EM_clahe_mm'_'blend':'additive'}}_'navigation':{'pose':{'position':{'voxelSize':[3_3_50]_'voxelCoordinates':[7065.73583984375_7558.888671875_25]}}_'zoomFactor':71.32601664970403}}'''
+link = VolumeLink(name='Overview',link=link_url_overview, volume=site_3_vol)
+db.session.add(link)
+synapse_view_url= '''http://ibs-forrestc-ux1.corp.alleninstitute.org:8002/#!{'layers':{'PSD95':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_LENS_Session1/PSD95'_'blend':'additive'_'color':1_'max':0.15}_'DAPI1':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_LENS_Session1/DAPI1'_'blend':'additive'_'color':4_'max':0.29}_'MBP':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_LENS_Session3/MBP'_'blend':'additive'_'color':5_'max':0.27}_'EM':{'type':'image'_'source':'render://http://ibs-forrestc-ux1.corp.alleninstitute.org:80/Forrest/M247514_Rorb_1/Site3Align2_EM_clahe_mm'_'blend':'additive'}}_'navigation':{'pose':{'position':{'voxelSize':[3_3_50]_'voxelCoordinates':[8057.68408203125_8237.8251953125_25]}}_'zoomFactor':2.2938339420378178}}'''
+link = VolumeLink(name='SynapseView',link=synapse_view_url, volume=site_3_vol)
+db.session.add(link)
+db.session.commit()

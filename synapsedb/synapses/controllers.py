@@ -11,7 +11,10 @@ from .schemas import SynapseCollectionSchema
 from synapsedb.volumes.models import VolumeLink
 from synapsedb.synapses.postgis import Box3D
 import ndviz
-from urllib import parse
+try:
+    from urllib import parse
+except:
+    import urlparse as parse
 # import ndviz
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 mod_synapses = Blueprint('synapses', __name__, url_prefix='/synapses')
