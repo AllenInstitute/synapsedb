@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 27a85dd33e40
-Revises: 5e2eceb58ee7
-Create Date: 2018-05-28 07:42:26.179084
+Revision ID: 54bfaf2ff871
+Revises: e9bb29ac1bf2
+Create Date: 2018-05-29 15:47:24.245518
 
 """
 from alembic import op
@@ -11,8 +11,8 @@ import geoalchemy2
 
 
 # revision identifiers, used by Alembic.
-revision = '27a85dd33e40'
-down_revision = '5e2eceb58ee7'
+revision = '54bfaf2ff871'
+down_revision = 'e9bb29ac1bf2'
 branch_labels = None
 depends_on = None
 

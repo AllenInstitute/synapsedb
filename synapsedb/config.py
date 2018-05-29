@@ -43,4 +43,3 @@ def configure_app(app):
     app.config.from_object(config[config_name])
     # instance-folders configuration
     app.config.from_pyfile('config.cfg', silent=True)
-

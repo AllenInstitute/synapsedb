@@ -6,11 +6,13 @@ from sqlalchemy.ext.declarative import declared_attr
 import sqlalchemy as sa
 from synapsedb.config import configure_app
 from synapsedb.utils import get_instance_folder_path
+
+
 # Import a module / component using its blueprint handler variable (mod_auth)
 
 
 # Define the WSGI application object
-app = Flask(__name__, 
+app = Flask(__name__,
             instance_path=get_instance_folder_path(),
             instance_relative_config=True)
 configure_app(app)
@@ -36,15 +38,16 @@ db = SQLAlchemy(app, model_class=IdModel)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
-from synapsedb.admin import admin
+from synapsedb.admin import setup_admin  # noQA: E402
+admin = setup_admin(app, db)
 
 # Sample HTTP error handling
 # @app.errorhandler(404)
 # def not_found(error):
 #     return render_template('404.html'), 404
 
-from synapsedb.volumes.controllers import mod_volumes as volumes_module
-from synapsedb.synapses.controllers import mod_synapses as synapses_module
+from synapsedb.volumes.controllers import mod_volumes as volumes_module  # noQA: E402,E501
+from synapsedb.synapses.controllers import mod_synapses as synapses_module  # noQA: E402,E501
 # Register blueprint(s)
 app.register_blueprint(volumes_module)
 app.register_blueprint(synapses_module)

@@ -2,7 +2,7 @@ from synapsedb import db
 from geoalchemy2 import Geometry
 from synapsedb.volumes.models import Volume
 from .config import SYNAPSE_SRID
-from sqlalchemy.dialects.postgresql import ARRAY
+
 
 class NamedModel(object):
     name = db.Column(db.String(100), nullable=False)
@@ -53,8 +53,6 @@ class Synapse(BioObject):
                                use_typmod=False,
                                srid=SYNAPSE_SRID,
                                dimension=3))
-
-
 
 
 # class IntegerRating(Rating):

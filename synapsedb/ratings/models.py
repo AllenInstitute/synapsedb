@@ -1,5 +1,8 @@
 from synapsedb import db
 from synapsedb.synapses.models import BioObject
+from sqlalchemy.dialects.postgresql import ARRAY
+import datetime
+
 
 class NamedModel(object):
     name = db.Column(db.String(100), nullable=False)

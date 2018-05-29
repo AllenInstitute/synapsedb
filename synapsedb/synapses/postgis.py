@@ -2,9 +2,11 @@
 from geoalchemy2.functions import GenericFunction
 from geoalchemy2 import Geometry
 
+
 class Box3D(GenericFunction):
     name = 'Box3D'
     type = Geometry
+
 
 class ST_3DExtent(GenericFunction):
     name = 'ST_3DExtent'
