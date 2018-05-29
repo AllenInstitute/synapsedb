@@ -7,6 +7,8 @@ We are not currently supporting this code, but simply releasing it to the commun
 ## Getting started
 Install docker.
 
+Edit synapsedb/instance/config.cfg to include your deployment specific secret keys and ndviz/neuroglancer server
+
 ```
   # spin up a postgres database on your localhost
   docker-compose up -d
