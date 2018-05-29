@@ -4,13 +4,16 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from sqlalchemy.ext.declarative import declared_attr
 import sqlalchemy as sa
+from config import configure_app
+from utils import get_instance_folder_path
 # Import a module / component using its blueprint handler variable (mod_auth)
 
-# Define the WSGI application object
-app = Flask(__name__)
 
-# Configurations
-app.config.from_object('config')
+# Define the WSGI application object
+app = Flask(__name__, 
+            instance_path=get_instance_folder_path(),
+            instance_relative_config=True)
+configure_app(app)
 
 
 class IdModel(Model):
