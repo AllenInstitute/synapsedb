@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Synapse: {{synapse.id}}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+collection: {{synapse.collection.id}}
+
+{{synapse.id}}
+<br/>
+center: {{center}}
+<br/>
+link: <a href="{{link_url}}">ndviz link</a>
+
+{% endblock %}

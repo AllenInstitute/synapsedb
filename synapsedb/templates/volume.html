@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Volume: {{volume.name}}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h2>SynapseCollections</h2>
+{% for syncol in volume.synapse_collection %}
+   <p>{{syncol.name}}</p>
+{% endfor %}
+<h2>Links:</h2>
+{% for link in volume.links %}
+<p>
+{{link.get_link_html()|safe}}
+</p>
+{% endfor %}
+
+<h2>Make Neuroglancer Link:</h2>
+<form method="post" action="{{url}}">
+    {{form.hidden_tag()}}
+    <table>
+    <tr>
+      <td>
+        Channel
+      </td>
+      <td>
+        Include
+      </td>
+      {% for choice in form.channels[0].color %}
+      <td>
+          {{choice.label}}
+      </td>
+      {% endfor %}
+   
+    </tr>
+   {% for channel in form.channels %}
+   <tr>
+   <td>{{channel.hidden_tag()}}{{channel.label}}</td>
+   <td>{{channel.include}}</td>
+   {% for choice in channel.color %}<td>{{choice}}</td>{% endfor %}
+  </tr>
+   {% endfor %}
+  </table>
+  <p>
+  {{form.neuroglancer_prefix(style="width: 400px")}}
+</p>
+  <input type="submit" value="Go">
+</form>
+
+{% endblock %}

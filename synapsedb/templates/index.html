@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{title}}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<table>
+    {% for dataset in datasets %}
+      <tr>
+        <td>
+            <a href="dataset/{{dataset.id}}">{{dataset.name}}</a>
+        </td>
+        <td>
+          dataset
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

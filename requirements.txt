@@ -1,0 +1,14 @@
+marshmallow
+numpy
+pandas
+flask
+sqlalchemy
+flask-sqlalchemy
+marshmallow-sqlalchemy
+flask-marshmallow
+flask-admin
+Flask-Migrate
+psycopg2
+geoalchemy2
+neuroglancer
+flask-wtf
