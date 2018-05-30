@@ -1,7 +1,7 @@
 from synapsedb import db
 from synapsedb.synapses.models import BioObject
 from sqlalchemy.dialects.postgresql import ARRAY
-import datetime
+from datetime import datetime
 
 
 class NamedModel(object):
@@ -11,7 +11,7 @@ class NamedModel(object):
         return "{}({})".format(self.name, self.id)
 
 
-class RatingSource(NamedModel):
+class RatingSource(NamedModel, db.Model):
     __tablename__ = "ratingsource"
     type = db.Column(db.String(32))
     __mapper_args__ = {
@@ -36,35 +36,51 @@ class MachineLearningSource(RatingSource):
     }
 
 
-class ClassificationType(NamedModel):
+class UserRatingSource(RatingSource):
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    __tablename__ = None
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+    }
+
+
+class User(db.Model):
+    __bind_key__ = 'users'
+    __tablename__ = 'users'
+    user_name = db.Column(db.String(255))
+    created = db.Column(db.DateTime, nullable=False, default=datetime.now())
+
+
+class ClassificationType(NamedModel, db.Model):
+    __tablename__ = "classificationtype"
     rating_type = db.Column(db.String(40))
 
 
 class TimestampMixin(object):
     created = db.Column(
-        db.DateTime, nullable=False, default=datetime.utcnow)
-    updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
+        db.DateTime, nullable=False, default=datetime.now())
+    updated = db.Column(db.DateTime, onupdate=datetime.now())
 
 
 class Rating(TimestampMixin, db.Model):
     __tablename__ = "rating"
     type = db.Column(db.String(32))
-    __mapper_args__ = {
-        'polymorphic_identity': 'rating',
-        'polymorphic_on': 'type',
-    }
-
     object_id = db.Column(db.Integer, db.ForeignKey('bioobject.id'))
     rating_source_id = db.Column(db.Integer, db.ForeignKey('ratingsource.id'))
-    rating_source = db.relationship('RatingSource')
     classificationtype_id = db.Column(
         db.Integer, db.ForeignKey('classificationtype.id'))
-    classificationtype = db.relationship('ClassificationType')
     confidence = db.Column(db.Float)
+    classificationtype = db.relationship('ClassificationType')
+    rating_source = db.relationship('RatingSource')
 
     def get_rating(self):
         '''generic function, need to implement for class'''
         pass
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'rating',
+        'polymorphic_on': 'type',
+    }
 
 
 class BinaryRating(Rating):

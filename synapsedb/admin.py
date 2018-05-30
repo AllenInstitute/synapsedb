@@ -2,6 +2,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from synapsedb.volumes.models import Volume, ImageChannel, DataSet, VolumeLink
 from synapsedb.synapses.models import SynapseCollection, Synapse
+from synapsedb.ratings.models import User, RatingSource
 
 
 class NoTypeView(ModelView):
@@ -10,10 +11,13 @@ class NoTypeView(ModelView):
 
 def setup_admin(app, db):
     admin = Admin(app, name="synapsedb")
-    admin.add_view(ModelView(DataSet, db.session))
-    admin.add_view(ModelView(Volume, db.session))
-    admin.add_view(NoTypeView(ImageChannel, db.session))
-    admin.add_view(NoTypeView(VolumeLink, db.session))
-    admin.add_view(NoTypeView(SynapseCollection, db.session))
-    admin.add_view(NoTypeView(Synapse, db.session))
+    admin.add_view(ModelView(DataSet, db.session, category='Volumes'))
+    admin.add_view(ModelView(Volume, db.session, category='Volumes'))
+    admin.add_view(NoTypeView(ImageChannel, db.session, category='Volumes'))
+    admin.add_view(NoTypeView(VolumeLink, db.session, category='Volumes'))
+    admin.add_view(NoTypeView(SynapseCollection,
+                              db.session, category='Synapses'))
+    admin.add_view(NoTypeView(Synapse, db.session, category='Synapses'))
+    admin.add_view(ModelView(User, db.session, category='Ratings'))
+    admin.add_view(ModelView(RatingSource, db.session, category='Ratings'))
     return admin

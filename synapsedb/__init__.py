@@ -48,12 +48,12 @@ admin = setup_admin(app, db)
 
 from synapsedb.volumes.controllers import mod_volumes as volumes_module  # noQA: E402,E501
 from synapsedb.synapses.controllers import mod_synapses as synapses_module  # noQA: E402,E501
+from synapsedb.ratings.controllers import mod_ratings as ratings_module  # noQA: E402,E501
 # Register blueprint(s)
 app.register_blueprint(volumes_module)
 app.register_blueprint(synapses_module)
+app.register_blueprint(ratings_module)
 
-# app.register_blueprint(xyz_module)
-# ..
 
 # Build the database:
 # This will create the database file using SQLAlchemy
