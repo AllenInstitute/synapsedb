@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify
 from synapsedb.ratings.models import Rating, RatingSource
 import json
 from synapsedb import db
+import pandas as pd
 mod_ratings = Blueprint('ratings', __name__, url_prefix='/ratings')
 
 
@@ -14,6 +15,24 @@ def index():
 @mod_ratings.route("/ratingsource/<ratingsource_id>/")
 def get_ratingsource(ratingsource_id):
     return "{}".format(ratingsource_id)
+
+
+def get_rating_summary_df(object_id):
+    rating_source_ids = get_ratingsources_of_object(object_id).json
+    ds = []
+    for rating_source_id in rating_source_ids:
+        d = get_ratings_of_object_by_source(rating_source_id, object_id).json
+        d['rating_source_id'] = rating_source_id
+        ds.append(d)
+    rating_df = pd.DataFrame(ds)
+    rating_df = rating_df.set_index('rating_source_id')
+    return rating_df
+
+
+@mod_ratings.route("/ratings_of/<object_id>/rating_csv")
+def get_rating_summary_csv(object_id):
+    df = get_rating_summary_df(object_id)
+    return jsonify(df.to_dict())
 
 
 @mod_ratings.route("/ratings_of/<object_id>/ratingsources")
