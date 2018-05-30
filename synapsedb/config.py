@@ -9,6 +9,7 @@ class BaseConfig(object):
     # Define the database - we are working with
     # SQLite for this example
     SQLALCHEMY_DATABASE_URI = 'postgres://postgres:synapsedb@localhost:5432'
+
     DATABASE_CONNECT_OPTIONS = {}
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # Application threads. A common general assumption is
@@ -41,5 +42,8 @@ def configure_app(app):
     config_name = os.getenv('FLASK_CONFIGURATION', 'default')
     # object-based default configuration
     app.config.from_object(config[config_name])
+    app.config.from_envvar('SYNAPSEDB_SETTINGS')
     # instance-folders configuration
     app.config.from_pyfile('config.cfg', silent=True)
+    
+    return app

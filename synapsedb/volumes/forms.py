@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import FieldList, BooleanField, RadioField, FormField
 from wtforms import StringField, HiddenField
-from .config import NEUROGLANCER_URL
 
 
 class ChannelForm(FlaskForm):
@@ -18,5 +17,4 @@ class ChannelForm(FlaskForm):
 
 class ChannelsForm(FlaskForm):
     channels = FieldList(FormField(ChannelForm))
-    neuroglancer_prefix = StringField(label="neuroglancer site",
-                                      default=NEUROGLANCER_URL)
+    neuroglancer_prefix = StringField(label="neuroglancer site")

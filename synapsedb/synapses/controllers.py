@@ -5,6 +5,7 @@ from synapsedb import db
 # Import module models (i.e. User)
 from .models import Synapse, SynapseCollection
 from .schemas import SynapseCollectionSchema
+from synapsedb.ratings.models import Rating
 
 # from geoalchemy2 import Geometry
 # from geoalchemy2.shape import from_shape, to_shape
@@ -69,6 +70,8 @@ def view_synapse(id):
     vid = synapse.collection.volume_id
     link = VolumeLink.query.filter_by(name='SynapseView',
                                       volume_id=vid).first()
+                                      
+
     if link is not None:
         urlp = parse.urlparse(link.link)
         state = ndviz.parse_url(link.link)

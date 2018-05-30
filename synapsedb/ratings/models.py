@@ -37,18 +37,11 @@ class MachineLearningSource(RatingSource):
 
 
 class UserRatingSource(RatingSource):
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer)
     __tablename__ = None
     __mapper_args__ = {
         'polymorphic_identity': 'user',
     }
-
-
-class User(db.Model):
-    __bind_key__ = 'users'
-    __tablename__ = 'users'
-    user_name = db.Column(db.String(255))
-    created = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
 
 class ClassificationType(NamedModel, db.Model):
@@ -65,10 +58,15 @@ class TimestampMixin(object):
 class Rating(TimestampMixin, db.Model):
     __tablename__ = "rating"
     type = db.Column(db.String(32))
-    object_id = db.Column(db.Integer, db.ForeignKey('bioobject.id'))
-    rating_source_id = db.Column(db.Integer, db.ForeignKey('ratingsource.id'))
-    classificationtype_id = db.Column(
-        db.Integer, db.ForeignKey('classificationtype.id'))
+    object_id = db.Column(db.Integer,
+                          db.ForeignKey('bioobject.id'),
+                          nullable=False,)
+    rating_source_id = db.Column(db.Integer,
+                                 db.ForeignKey('ratingsource.id'),
+                                 nullable=False,)
+    classificationtype_id = db.Column(db.Integer,
+                                      db.ForeignKey('classificationtype.id'),
+                                      nullable=False)
     confidence = db.Column(db.Float)
     classificationtype = db.relationship('ClassificationType')
     rating_source = db.relationship('RatingSource')

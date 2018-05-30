@@ -1,5 +1,5 @@
 # Import flask dependencies
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, current_app
 # Import the database object from the main app module
 from synapsedb.volumes.schemas import DataSetSchema, VolumeSchema
 import pandas as pd
@@ -90,6 +90,7 @@ def view_volume(id):
     except IndexError:
         return "no volume found"
     form = ChannelsForm()
+    form.neuroglancer_prefix.data = current_app.config['NEUROGLANCER_URL']
     for channel in volume.channels:
         form.channels.append_entry()
     for channel, entry in zip(volume.channels, form.channels.entries):

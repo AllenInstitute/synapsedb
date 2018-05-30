@@ -15,8 +15,7 @@ from synapsedb.utils import get_instance_folder_path
 app = Flask(__name__,
             instance_path=get_instance_folder_path(),
             instance_relative_config=True)
-configure_app(app)
-
+app=configure_app(app)
 
 class IdModel(Model):
     @declared_attr
@@ -71,4 +70,4 @@ db.create_all()
 
 @app.route("/")
 def index():
-    return "hello world"
+    return "hello synapsedb"
