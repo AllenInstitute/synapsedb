@@ -1,6 +1,6 @@
 # Import flask dependencies
 from flask import Blueprint, jsonify
-from synapsedb.ratings.models import Rating, RatingSource
+from synapsedb.ratings.models import Rating, RatingSource, ClassificationType
 import json
 from synapsedb import db
 import pandas as pd
@@ -12,7 +12,15 @@ def index():
     return "hello ratings"
 
 
-@mod_ratings.route("/ratingsource/<ratingsource_id>/")
+@mod_ratings.route("/ratings_of/<object_id>/ratingsource/<ratingsource_id>/rating/<class_name>")
+def get_rating(object_id, ratingsource_id, class_name):
+    classtype = ClassificationType.query.filter_by(name=class_name).first()
+    rating = Rating.query.filter_by(object_id=object_id,
+                                    rating_source_id=ratingsource_id,
+                                    classificationtype=classtype).first()
+    return jsonify(rating.get_rating())
+
+@mod_ratings.route("/ratingsource/<ratingsource_id>/")  
 def get_ratingsource(ratingsource_id):
     return "{}".format(ratingsource_id)
 

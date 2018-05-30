@@ -46,7 +46,7 @@ def view_synapsecollection(id):
     df = named_objects_to_df(collections,
                              SynapseCollectionSchema(),
                              '.view_synapsecollection')
-    render_template('table.html', table=df.to_html(escape=False))
+    return render_template('table.html', table=df.to_html(escape=False))
 
 
 def get_box_center(box3d):
