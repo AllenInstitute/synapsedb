@@ -29,8 +29,8 @@ def get_rating_summary_df(object_id):
     return rating_df
 
 
-@mod_ratings.route("/ratings_of/<object_id>/rating_csv")
-def get_rating_summary_csv(object_id):
+@mod_ratings.route("/ratings_of/<object_id>/json")
+def get_rating_summary_json(object_id):
     df = get_rating_summary_df(object_id)
     return jsonify(df.to_dict())
 
