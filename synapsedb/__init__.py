@@ -7,7 +7,7 @@ import sqlalchemy as sa
 from synapsedb.config import configure_app
 from synapsedb.utils import get_instance_folder_path
 
-
+__version__ = '0.0.1'
 # Import a module / component using its blueprint handler variable (mod_auth)
 
 
