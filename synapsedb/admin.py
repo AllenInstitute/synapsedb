@@ -2,7 +2,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from synapsedb.volumes.models import Volume, ImageChannel, DataSet, VolumeLink
 from synapsedb.synapses.models import SynapseCollection, Synapse
-from synapsedb.ratings.models import RatingSource
+from synapsedb.ratings.models import RatingSource, ClassificationType
 
 
 class NoTypeView(ModelView):
@@ -19,4 +19,5 @@ def setup_admin(app, db):
                               db.session, category='Synapses'))
     admin.add_view(NoTypeView(Synapse, db.session, category='Synapses'))
     admin.add_view(ModelView(RatingSource, db.session, category='Ratings'))
+    admin.add_view(ModelView(ClassificationType, db.session, category='Ratings'))
     return admin
