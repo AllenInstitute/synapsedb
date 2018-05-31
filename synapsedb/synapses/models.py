@@ -54,16 +54,3 @@ class Synapse(BioObject):
                                srid=SYNAPSE_SRID,
                                dimension=3))
 
-
-# class IntegerRating(Rating):
-#     __tablename__ = None
-#     __mapper_args__ = {
-#         'polymorphic_identity': 'tertiary',
-#     }
-
-# class HumanRater(NamedModel):
-#     pass
-
-
-# class UserRatingSource(ClassSource):
-#     human_rater_id = db.Column(db.Integer, db.ForeignKey('HumanRater.id'))
