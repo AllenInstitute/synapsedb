@@ -15,7 +15,8 @@ __version__ = '0.0.1'
 app = Flask(__name__,
             instance_path=get_instance_folder_path(),
             instance_relative_config=True)
-app=configure_app(app)
+app = configure_app(app)
+
 
 class IdModel(Model):
     @declared_attr

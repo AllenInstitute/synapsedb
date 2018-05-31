@@ -53,4 +53,3 @@ class Synapse(BioObject):
                                use_typmod=False,
                                srid=SYNAPSE_SRID,
                                dimension=3))
-

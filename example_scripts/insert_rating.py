@@ -57,9 +57,9 @@ for k, row in df.iterrows():
                                    rating_source=consensus_source,
                                    classificationtype=postRorb_type,
                                    bool_rating=isPost)
-    #print(isGaba,issyn,isShaft,isPre,isPost)
+    # print(isGaba,issyn,isShaft,isPre,isPost)
 
     db.session.add(preRorb_rating)
     db.session.add(postRorb_rating)
-    #break
+    # break
 db.session.commit()
