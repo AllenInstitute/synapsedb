@@ -1,5 +1,16 @@
-version: '3.1'
+version: '2.1'
 services:
+  app:
+    image: fcollman/synapsedb
+    ports:
+      - 80:80
+    volumes:
+      - ${PWD}/docker/docker_compose_config.py:/synapsedb/synapsedb/instance/dev_config.py
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: mdillon/postgis
     environment:
@@ -8,6 +19,11 @@ services:
       - 5432:5432
     volumes:
       - ./data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U postgres"
+      interval: 3s
+      timeout: 5s
+      retries: 5
   adminer:
     image: adminer
     ports:

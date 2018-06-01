@@ -1,0 +1,8 @@
+.ipynb_checkpoints/
+__pycache__/
+.vscode/
+data/
+example_scripts/
+test/
+Dockerfile
+.dockerignore
