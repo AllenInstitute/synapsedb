@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, current_app
 from synapsedb.volumes.schemas import DataSetSchema, VolumeSchema
 import pandas as pd
 # Import module models (i.e. User)
-from synapsedb.volumes.models import Volume, DataSet, SourceChannel
+from synapsedb.volumes.models import Volume, DataSet, SourceChannel, ImageChannel
 from .forms import ChannelsForm
 import ndviz
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
@@ -63,7 +63,8 @@ def make_link():
             if form_channel.include.data:
                 id = int(form_channel.channel_id.data)
                 channel = SourceChannel.query.filter_by(id=id)[0]
-                channel.default_color = form_channel.color.data
+                if isinstance(channel, ImageChannel):
+                    channel.default_color = form_channel.color.data
                 channels.append(channel)
 
         state = ndviz.ViewerState()
@@ -95,8 +96,9 @@ def view_volume(id):
         form.channels.append_entry()
     for channel, entry in zip(volume.channels, form.channels.entries):
         entry.label.text = channel.name
-        entry.include.data = channel.default_channel
-        entry.color.data = channel.default_color
+        if isinstance(channel, ImageChannel):
+            entry.include.data = channel.default_channel
+            entry.color.data = channel.default_color
         entry.channel_id.data = channel.id
     return render_template('volume.html',
                            volume=volume,
