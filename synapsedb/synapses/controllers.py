@@ -1,5 +1,5 @@
 # Import flask dependencies
-from flask import Blueprint, render_template, url_for
+from flask import Blueprint, render_template, url_for, jsonify
 import pandas as pd
 from synapsedb import db
 # Import module models (i.e. User)
@@ -10,6 +10,7 @@ from synapsedb.ratings.controllers import get_rating_summary_df
 # from geoalchemy2.shape import from_shape, to_shape
 from synapsedb.volumes.models import VolumeLink
 from synapsedb.synapses.postgis import Box3D
+from synapsedb.synapses.schemas import SynapseSchema
 import ndviz
 try:
     from urllib import parse
@@ -64,6 +65,11 @@ def get_box_center(box3d):
     maxZ = db.session.scalar(box3d.ST_ZMax())
     return [(maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2]
 
+@mod_synapses.route("/synapse/<id>/json")
+def view_synapse_json(id):
+    synapse = Synapse.query.filter_by(id=id).first()
+    schema = SynapseSchema()
+    return schema.jsonify(synapse)
 
 @mod_synapses.route("/synapse/<id>")
 def view_synapse(id):
