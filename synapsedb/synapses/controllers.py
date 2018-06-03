@@ -40,6 +40,12 @@ def index():
     return render_template('table.html', table=df.to_html(escape=False))
 
 
+@mod_synapses.route("/synapsecollection/<id>/oid/<oid>")
+def view_synapse_by_collection_oid(id, oid):
+    synapse = Synapse.query.filter_by(volume_id=id, oid=oid)
+    return view_synapse(synapse.id)
+
+
 @mod_synapses.route("/synapsecollection/<id>")
 def view_synapsecollection(id):
     collections = SynapseCollection.query.filter_by(id=id)
