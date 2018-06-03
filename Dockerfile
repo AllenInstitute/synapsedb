@@ -1,4 +1,4 @@
-from continuumio/miniconda3
+FROM continuumio/miniconda3
 
 WORKDIR /usr/local
 RUN git clone https://github.com/neurodata/ndviz.git

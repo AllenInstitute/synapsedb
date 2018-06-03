@@ -21,5 +21,3 @@ class SynapseSchema(ma.ModelSchema):
     class Meta:
         model = Synapse
         model_converter = GeoConverter
-
-

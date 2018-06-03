@@ -45,5 +45,5 @@ def configure_app(app):
     app.config.from_envvar('SYNAPSEDB_SETTINGS')
     # instance-folders configuration
     app.config.from_pyfile('config.cfg', silent=True)
-    
+
     return app
