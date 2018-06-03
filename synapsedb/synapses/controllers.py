@@ -43,7 +43,7 @@ def index():
 
 @mod_synapses.route("/synapsecollection/<id>/oid/<oid>")
 def view_synapse_by_collection_oid(id, oid):
-    synapse = Synapse.query.filter_by(object_collection_id=id, oid=oid)
+    synapse = Synapse.query.filter_by(object_collection_id=id, oid=oid).first()
     return view_synapse(synapse.id)
 
 
