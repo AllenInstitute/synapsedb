@@ -66,7 +66,7 @@ class SegmentationChannel(SourceChannel):
 class Link(NamedModel, db.Model):
     __tablename__ = 'link'
     type = db.Column(db.String(32))
-    link = db.Column(db.String(1000))
+    link = db.Column(db.String(10000))
     __mapper_args__ = {
         'polymorphic_on': 'type',
         'polymorphic_identity': 'link'
