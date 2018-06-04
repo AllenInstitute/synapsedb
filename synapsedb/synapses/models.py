@@ -15,6 +15,7 @@ class BioObjectCollection(NamedModel, db.Model):
     __tablename__ = 'bioobjectcollection'
     volume_id = db.Column(db.Integer, db.ForeignKey('volume.id'))
     volume = db.relationship('Volume')
+    objects = db.relationship('BioObject')
     type = db.Column(db.String(32))
     __mapper_args__ = {
         'polymorphic_on': 'type',

@@ -1,14 +1,17 @@
 # Import flask dependencies
 from flask import Blueprint, jsonify
-from synapsedb.ratings.models import Rating, ClassificationType
+from synapsedb.ratings.models import Rating, ClassificationType, RatingSource
+from synapsedb.ratings.schemas import RatingSourceSchema
 from synapsedb import db
 import pandas as pd
 mod_ratings = Blueprint('ratings', __name__, url_prefix='/ratings')
 
-
+@mod_ratings.route("/ratingsources")
 @mod_ratings.route("/")
 def index():
-    return "hello ratings"
+    rating_sources = RatingSource.query.all()
+    schema = RatingSourceSchema()
+    return schema.jsonify(rating_sources, many=True)
 
 
 @mod_ratings.route("/ratings_of/<object_id>/ratingsource/<ratingsource_id>/rating/<class_name>")
@@ -20,9 +23,12 @@ def get_rating(object_id, ratingsource_id, class_name):
     return jsonify(rating.get_rating())
 
 
-@mod_ratings.route("/ratingsource/<ratingsource_id>/")
+@mod_ratings.route("/ratingsource/<ratingsource_id>")
 def get_ratingsource(ratingsource_id):
-    return "{}".format(ratingsource_id)
+    rating_source = RatingSource.query.filter_by(id=ratingsource_id).first()
+    schema = RatingSourceSchema()
+    return schema.jsonify(rating_source)
+
 
 
 def get_rating_summary_df(object_id):
@@ -37,7 +43,7 @@ def get_rating_summary_df(object_id):
     return rating_df
 
 
-@mod_ratings.route("/ratings_of/<object_id>/json")
+@mod_ratings.route("/ratings_of/<object_id>")
 def get_rating_summary_json(object_id):
     df = get_rating_summary_df(object_id)
     return jsonify(df.to_dict())
@@ -53,7 +59,7 @@ def get_ratingsources_of_object(object_id):
     return jsonify([result[0] for result in results])
 
 
-@mod_ratings.route("/ratings_of/<object_id>/ratingsource/<ratingsource_id>/")
+@mod_ratings.route("/ratings_of/<object_id>/ratingsource/<ratingsource_id>")
 def get_ratings_of_object_by_source(ratingsource_id, object_id):
     ratings = Rating.query.filter_by(rating_source_id=ratingsource_id,
                                      object_id=object_id)

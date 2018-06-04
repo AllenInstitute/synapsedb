@@ -21,7 +21,7 @@ def named_objects_to_df(objects, schema, url):
                           axis=1)
     return df
 
-
+@mod_volumes.route("/view")
 @mod_volumes.route("/")
 def index():
     datasets = DataSet.query.all()
@@ -29,17 +29,15 @@ def index():
     return render_template('table.html', table=df.to_html(escape=False))
 
 
-@mod_volumes.route("/dataset/<id>")
+@mod_volumes.route("/view/dataset/<id>")
 def view_dataset(id):
 
     datasets = DataSet.query.filter_by(id=id)
-    df = named_objects_to_df(datasets, DataSetSchema(), '.view_dataset')
     df_vol = named_objects_to_df(datasets[0].volumes,
                                  VolumeSchema(),
                                  '.view_volume')
     return render_template('tables.html',
-                           tables=[df.to_html(escape=False),
-                                   df_vol.to_html(escape=False)],
+                           tables=[df_vol.to_html(escape=False)],
                            titles=['header', 'volumes'])
 
 
@@ -84,7 +82,7 @@ def make_link():
         return "not valid data {}".format(form.data)
 
 
-@mod_volumes.route("/volume/<id>")
+@mod_volumes.route("/view/volume/<id>")
 def view_volume(id):
     try:
         volume = Volume.query.filter_by(id=id)[0]

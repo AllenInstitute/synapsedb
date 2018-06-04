@@ -40,19 +40,32 @@ def index():
                              '.view_synapsecollection')
     return render_template('table.html', table=df.to_html(escape=False))
 
+@mod_synapses.route("/synapsecollections")
+def get_synapsecollections():
+    collection= SynapseCollection.query.all()
+    schema = SynapseCollectionSchema(exclude=['objects'])
+    return schema.jsonify(collection, many=True)
 
-@mod_synapses.route("/synapsecollection/<id>/oid/<oid>")
+
+@mod_synapses.route("/view/synapsecollection/<id>/oid/<oid>")
 def view_synapse_by_collection_oid(id, oid):
     synapse = Synapse.query.filter_by(object_collection_id=id, oid=oid).first()
     return view_synapse(synapse.id)
 
-
 @mod_synapses.route("/synapsecollection/<id>")
+def get_synapsecollection(id):
+    collection= SynapseCollection.query.filter_by(id=id).first()
+    schema = SynapseCollectionSchema()
+    return schema.jsonify(collection)
+
+
+@mod_synapses.route("/view/synapsecollection/<id>")
 def view_synapsecollection(id):
     collections = SynapseCollection.query.filter_by(id=id)
     df = named_objects_to_df(collections,
                              SynapseCollectionSchema(),
                              '.view_synapsecollection')
+    df['volume_name']=df.volu
     return render_template('table.html', table=df.to_html(escape=False))
 
 
@@ -66,14 +79,14 @@ def get_box_center(box3d):
     return [(maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2]
 
 
-@mod_synapses.route("/synapse/<id>/json")
+@mod_synapses.route("/synapse/<id>")
 def view_synapse_json(id):
     synapse = Synapse.query.filter_by(id=id).first()
     schema = SynapseSchema()
     return schema.jsonify(synapse)
 
 
-@mod_synapses.route("/synapse/<id>")
+@mod_synapses.route("/view/synapse/<id>")
 def view_synapse(id):
     synapse = Synapse.query.filter_by(id=id)[0]
     # shape = to_shape(synapse.areas)
