@@ -68,13 +68,18 @@ def view_synapsecollection(id):
     return render_template('synapse_collection.html', collection=collection)
 
 
-def get_box_center(box3d):
+def get_box_as_array(box3d):
     minX = db.session.scalar(box3d.ST_XMin())
     minY = db.session.scalar(box3d.ST_YMin())
     minZ = db.session.scalar(box3d.ST_ZMin())
     maxX = db.session.scalar(box3d.ST_XMax())
     maxY = db.session.scalar(box3d.ST_YMax())
     maxZ = db.session.scalar(box3d.ST_ZMax())
+    return (minX, minY, minZ, maxX, maxY, maxZ)
+
+
+def get_box_center(box3d):
+    (minX, minY, minZ, maxX, maxY, maxZ) = get_box_as_array(box3d)
     return [(maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2]
 
 
