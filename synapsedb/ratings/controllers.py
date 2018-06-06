@@ -38,10 +38,12 @@ def get_rating_summary_df(object_id):
         d = get_ratings_of_object_by_source(rating_source_id, object_id).json
         d['rating_source_id'] = rating_source_id
         ds.append(d)
-    rating_df = pd.DataFrame(ds)
-    rating_df = rating_df.set_index('rating_source_id')
-    return rating_df
-
+    if len(ds)>0:
+        rating_df = pd.DataFrame(ds)
+        rating_df = rating_df.set_index('rating_source_id')
+        return rating_df
+    else:
+        return None
 
 @mod_ratings.route("/ratings_of/<object_id>")
 def get_rating_summary_json(object_id):

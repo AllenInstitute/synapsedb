@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}SynapseCollection: {{collection.name}} id:{{collection.id}}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<p>
+Volume: <a href="{{url_for('volumes.view_volume',id=collection.volume.id)}}">{{collection.volume.name}} ({{collection.volume.id}})</a>
+</p>
+<p>
+# Synapses: {{collection.objects | length}}
+</p>
+{% endblock %}

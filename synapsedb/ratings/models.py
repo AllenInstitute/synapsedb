@@ -70,7 +70,9 @@ class Rating(TimestampMixin, db.Model):
     confidence = db.Column(db.Float)
     classificationtype = db.relationship('ClassificationType')
     rating_source = db.relationship('RatingSource')
-
+    object = db.relationship('BioObject')
+    bool_rating = db.Column(db.Boolean)
+    tert_rating = db.Column(db.Integer)
     def get_rating(self):
         '''generic function, need to implement for class'''
         pass
@@ -86,7 +88,7 @@ class BinaryRating(Rating):
     __mapper_args__ = {
         'polymorphic_identity': 'binary',
     }
-    bool_rating = db.Column(db.Boolean)
+    
 
     def get_rating(self):
         return self.bool_rating
@@ -97,7 +99,7 @@ class TertiaryRating(Rating):
     __mapper_args__ = {
         'polymorphic_identity': 'tertiary',
     }
-    tert_rating = db.Column(db.Integer)
+    
 
     def get_rating(self):
         return self.tert_rating

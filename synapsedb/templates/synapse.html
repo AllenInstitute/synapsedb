@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block content %}
-collection: {{synapse.collection.id}}
-
-{{synapse.id}}
+<p>
+collection: <a href="{{url_for('.view_synapsecollection',id=synapse.collection.id)}}"> {{synapse.collection.id}}</a>
+</p>
 <br/>
 center: {{center}}
 <br/>

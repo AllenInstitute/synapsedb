@@ -61,12 +61,11 @@ def get_synapsecollection(id):
 
 @mod_synapses.route("/view/synapsecollection/<id>")
 def view_synapsecollection(id):
-    collections = SynapseCollection.query.filter_by(id=id)
-    df = named_objects_to_df(collections,
-                             SynapseCollectionSchema(),
-                             '.view_synapsecollection')
-    df['volume_name']=df.volu
-    return render_template('table.html', table=df.to_html(escape=False))
+    collection = SynapseCollection.query.filter_by(id=id).first_or_404()
+    # df = named_objects_to_df(collections,
+    #                          SynapseCollectionSchema(),
+    #                          '.view_synapsecollection')
+    return render_template('synapse_collection.html', collection=collection)
 
 
 def get_box_center(box3d):
@@ -98,6 +97,10 @@ def view_synapse(id):
                                       volume_id=vid).first()
 
     rating_df = get_rating_summary_df(synapse.id)
+    if rating_df is not None:
+        rating_html = rating_df.to_html(escape=False)
+    else:
+        rating_html = None
 
     if link is not None:
         urlp = parse.urlparse(link.link)
@@ -112,4 +115,4 @@ def view_synapse(id):
                            center=center_box,
                            synapse=synapse,
                            link_url=url,
-                           rating_table=rating_df.to_html(escape=False))
+                           rating_table=rating_html)

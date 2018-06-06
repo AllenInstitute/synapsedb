@@ -46,13 +46,13 @@ admin = setup_admin(app, db)
 # def not_found(error):
 #     return render_template('404.html'), 404
 
-from synapsedb.volumes.controllers import mod_volumes as volumes_module  # noQA: E402,E501
-from synapsedb.synapses.controllers import mod_synapses as synapses_module  # noQA: E402,E501
-from synapsedb.ratings.controllers import mod_ratings as ratings_module  # noQA: E402,E501
+from synapsedb.volumes.controllers import mod_volumes as volumes  # noQA: E402,E501
+from synapsedb.synapses.controllers import mod_synapses as synapses  # noQA: E402,E501
+from synapsedb.ratings.controllers import mod_ratings as ratings  # noQA: E402,E501
 # Register blueprint(s)
-app.register_blueprint(volumes_module)
-app.register_blueprint(synapses_module)
-app.register_blueprint(ratings_module)
+app.register_blueprint(volumes)
+app.register_blueprint(synapses)
+app.register_blueprint(ratings)
 
 
 # Build the database:
