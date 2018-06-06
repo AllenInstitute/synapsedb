@@ -1,6 +1,6 @@
 from synapsedb import db
 from geoalchemy2 import Geometry
-from synapsedb.volumes.models import Volume
+from synapsedb.volumes.models import Volume, Link
 from .config import SYNAPSE_SRID
 
 
@@ -15,6 +15,8 @@ class BioObjectCollection(NamedModel, db.Model):
     __tablename__ = 'bioobjectcollection'
     volume_id = db.Column(db.Integer, db.ForeignKey('volume.id'))
     volume = db.relationship('Volume')
+    link_id = db.Column(db.Integer, db.ForeignKey('link.id'))
+    link = db.relationship('Link')
     objects = db.relationship('BioObject')
     type = db.Column(db.String(32))
     __mapper_args__ = {
