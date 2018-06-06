@@ -1,4 +1,4 @@
-from flask import Flask  # , render_template
+from flask import Flask, render_template  # , render_template
 from flask_sqlalchemy import SQLAlchemy, Model
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
@@ -71,4 +71,4 @@ db.create_all()
 
 @app.route("/")
 def index():
-    return "hello synapsedb"
+    return render_template("index.html",title='synapsedb homepage')

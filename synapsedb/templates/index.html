@@ -5,16 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<table>
-    {% for dataset in datasets %}
-      <tr>
-        <td>
-            <a href="dataset/{{dataset.id}}">{{dataset.name}}</a>
-        </td>
-        <td>
-          dataset
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+<p><a href="{{url_for('volumes.index')}}">Volumes</a></p>
+<p><a href="{{url_for('synapses.index')}}">Synapses</a></p>
+<p><a href="{{url_for('ratings.index')}}">Ratings</a></p>
 {% endblock %}
