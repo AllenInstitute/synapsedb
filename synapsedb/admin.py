@@ -8,6 +8,8 @@ from synapsedb.ratings.models import RatingSource, ClassificationType, Rating
 class NoTypeView(ModelView):
     form_excluded_columns = ['type']
 
+class SynapseCollectionView(ModelView):
+    form_excluded_columns = ['type', 'objects']
 
 def setup_admin(app, db):
     admin = Admin(app, name="synapsedb")
@@ -18,7 +20,7 @@ def setup_admin(app, db):
                               db.session,
                               category='Volumes'))
     admin.add_view(NoTypeView(VolumeLink, db.session, category='Volumes'))
-    admin.add_view(NoTypeView(SynapseCollection,
+    admin.add_view(SynapseCollectionView(SynapseCollection,
                               db.session, category='Synapses'))
     admin.add_view(NoTypeView(Synapse, db.session, category='Synapses'))
     admin.add_view(ModelView(RatingSource, db.session, category='Ratings'))

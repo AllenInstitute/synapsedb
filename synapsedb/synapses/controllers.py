@@ -93,15 +93,13 @@ def view_synapse(id):
     box3d = Box3D(synapse.areas)
     center_box = get_box_center(box3d)
     vid = synapse.collection.volume_id
-    link = VolumeLink.query.filter_by(name='SynapseView',
-                                      volume_id=vid).first()
 
     rating_df = get_rating_summary_df(synapse.id)
     if rating_df is not None:
         rating_html = rating_df.to_html(escape=False)
     else:
         rating_html = None
-
+    link = synapse.collection.link
     if link is not None:
         urlp = parse.urlparse(link.link)
         state = ndviz.parse_url(link.link)
