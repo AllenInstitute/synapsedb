@@ -90,7 +90,8 @@ def view_synapsecollection(id):
     return render_template('synapse_collection.html',
                            collection=collection,
                            table=df_cut.to_html(index=False,
-                                                escape=False))
+                                                escape=False,
+                                                maxrows=2000))
 
 
 def get_box_as_array(box3d):
