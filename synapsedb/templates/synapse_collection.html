@@ -10,5 +10,8 @@ Volume: <a href="{{url_for('volumes.view_volume',id=collection.volume.id)}}">{{c
 </p>
 <p>
 # Synapses: {{collection.objects | length}}
+<p>
+{{ table|safe }}
+
 </p>
 {% endblock %}
