@@ -70,9 +70,9 @@ def view_synapsecollection(id):
                                         Synapse.oid,
                                         (ST_XMin(Synapse.areas) +
                                          ST_XMax(Synapse.areas)) / 2,
-                                        ST_YMin(Synapse.areas) +
-                                        ST_YMax(Synapse.areas) / 2,
-                                        ST_ZMin(Synapse.areas) +
+                                        (ST_YMin(Synapse.areas) +
+                                        ST_YMax(Synapse.areas)) / 2,
+                                        (ST_ZMin(Synapse.areas) +
                                         ST_ZMax(Synapse.areas) / 2,
                                         ).filter(Synapse.object_collection_id == id)
     df = pd.read_sql(query.statement, db.session.bind)
