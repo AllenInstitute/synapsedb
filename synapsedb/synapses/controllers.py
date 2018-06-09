@@ -1,5 +1,5 @@
 # Import flask dependencies
-from flask import Blueprint, render_template, url_for
+from flask import Blueprint, render_template, url_for, request, redirect
 import pandas as pd
 from synapsedb import db
 # Import module models (i.e. User)
@@ -11,6 +11,7 @@ from synapsedb.ratings.controllers import get_rating_summary_df
 from synapsedb.volumes.models import VolumeLink
 from synapsedb.synapses.postgis import Box3D, ST_XMin, ST_YMin, ST_ZMin, ST_XMax, ST_YMax, ST_ZMax
 from synapsedb.synapses.schemas import SynapseSchema
+from synapsedb.synapses.forms import SynapseViewForm
 from functools import partial
 import numpy as np
 import ndviz
@@ -63,18 +64,29 @@ def get_synapsecollection(id):
     return schema.jsonify(collection)
 
 
-@mod_synapses.route("/view/synapsecollection/<id>")
+@mod_synapses.route("/view/synapsecollection/<id>", methods=["GET", "POST"])
 def view_synapsecollection(id):
+    form = SynapseViewForm()
+    if request.method == 'POST':
+        print(form.object_id.data)
+        print(form.oid.data)
+        if form.object_id.data is not None:
+            return redirect(url_for('.view_synapse',
+                                    id=form.object_id.data))
+        if form.oid.data is not None:
+            return redirect(url_for('.view_synapse_by_collection_oid',
+                                    id=id,
+                                    oid=form.oid.data))
     collection = SynapseCollection.query.filter_by(id=id).first_or_404()
     query = Synapse.query.with_entities(Synapse.id,
                                         Synapse.oid,
                                         (ST_XMin(Synapse.areas) +
                                          ST_XMax(Synapse.areas)) / 2,
                                         (ST_YMin(Synapse.areas) +
-                                        ST_YMax(Synapse.areas)) / 2,
+                                         ST_YMax(Synapse.areas)) / 2,
                                         (ST_ZMin(Synapse.areas) +
-                                        ST_ZMax(Synapse.areas) / 2,
-                                        ).filter(Synapse.object_collection_id == id)
+                                         ST_ZMax(Synapse.areas)) / 2)\
+        .filter(Synapse.object_collection_id == id)
     df = pd.read_sql(query.statement, db.session.bind)
     for k, row in df.iterrows():
         url = make_synapse_link_fast(
@@ -83,15 +95,18 @@ def view_synapsecollection(id):
             df.loc[k, 'link'] = "<a href='{}'>vizlink</a>".format(url)
         else:
             df.loc[k, 'link'] = ""
-    
+
     df['id'] = df.id.map(lambda x: "<a href='{}'>{}</a>"
                          .format(url_for('.view_synapse', id=x), x))
     df_cut = df[['id', 'oid', 'link']]
+
+    form.collection_id.data = collection.id
     return render_template('synapse_collection.html',
                            collection=collection,
                            table=df_cut.to_html(index=False,
                                                 escape=False,
-                                                maxrows=2000))
+                                                max_rows=2000),
+                           form=form)
 
 
 def get_box_as_array(box3d):
@@ -151,7 +166,7 @@ def view_synapse(id):
         rating_html = rating_df.to_html(escape=False)
     else:
         rating_html = None
-    url = synapse.make_link(center_box)
+    url = make_synapse_link_fast(synapse.collection.link, center_box)
     # print(to_shape(centroid))
     return render_template("synapse.html",
                            center=center_box,

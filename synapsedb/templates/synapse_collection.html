@@ -8,6 +8,10 @@
 <p>
 Volume: <a href="{{url_for('volumes.view_volume',id=collection.volume.id)}}">{{collection.volume.name}} ({{collection.volume.id}})</a>
 </p>
+<form method="post" action="{{url}}">
+    {{ form.hidden_tag() }}
+    {{ form.object_id.label }}{{ form.object_id(size=20) }} {{form.oid.label}} {{form.oid(size=20)}} <input type="submit" value="Go">
+</form>
 <p>
 # Synapses: {{collection.objects | length}}
 <p>
