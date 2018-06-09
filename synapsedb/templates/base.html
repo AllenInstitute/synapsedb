@@ -2,7 +2,20 @@
 <title>{% block title %}{% endblock %} - SynapseDb</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
-  <h1>SynapseDb</h1>
+  <ul><li>
+     <a href="{{url_for('index')}}">SynapseDb</a>
+  </li>
+
+    <li>
+          <a href="{{url_for('volumes.index')}}">Volumes</a>    
+    </li>
+      <li>
+          <a href="{{url_for('synapses.index')}}">Synapses</a>
+      </li>
+      <li>
+          <a href="{{url_for('ratings.index')}}">Ratings</a>
+      </li>
+  </ul>
 </nav>
 <section class="content">
   <header>
