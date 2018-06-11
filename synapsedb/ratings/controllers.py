@@ -30,7 +30,6 @@ def get_ratingsource(ratingsource_id):
     return schema.jsonify(rating_source)
 
 
-
 def get_rating_summary_df(object_id):
     rating_source_ids = get_ratingsources_of_object(object_id).json
     ds = []

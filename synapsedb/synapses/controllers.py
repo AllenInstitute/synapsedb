@@ -64,19 +64,22 @@ def get_synapsecollection(id):
     return schema.jsonify(collection)
 
 
+@mod_synapses.route("/view/synapse_redirect", methods=["POST"])
+def synapse_redirect():
+    form = SynapseViewForm()
+    if form.object_id.data is not None:
+        return redirect(url_for('.view_synapse',
+                                id=form.object_id.data))
+    if form.oid.data is not None:
+        return redirect(url_for('.view_synapse_by_collection_oid',
+                                id=form.collection_id.data,
+                                oid=form.oid.data))
+    return "invalid form"
+
+
 @mod_synapses.route("/view/synapsecollection/<id>", methods=["GET", "POST"])
 def view_synapsecollection(id):
-    form = SynapseViewForm()
-    if request.method == 'POST':
-        print(form.object_id.data)
-        print(form.oid.data)
-        if form.object_id.data is not None:
-            return redirect(url_for('.view_synapse',
-                                    id=form.object_id.data))
-        if form.oid.data is not None:
-            return redirect(url_for('.view_synapse_by_collection_oid',
-                                    id=id,
-                                    oid=form.oid.data))
+    
     collection = SynapseCollection.query.filter_by(id=id).first_or_404()
     query = Synapse.query.with_entities(Synapse.id,
                                         Synapse.oid,
@@ -87,6 +90,7 @@ def view_synapsecollection(id):
                                         (ST_ZMin(Synapse.areas) +
                                          ST_ZMax(Synapse.areas)) / 2)\
         .filter(Synapse.object_collection_id == id)
+    
     df = pd.read_sql(query.statement, db.session.bind)
     for k, row in df.iterrows():
         url = make_synapse_link_fast(
@@ -100,9 +104,11 @@ def view_synapsecollection(id):
                          .format(url_for('.view_synapse', id=x), x))
     df_cut = df[['id', 'oid', 'link']]
 
+    form = SynapseViewForm()
     form.collection_id.data = collection.id
     return render_template('synapse_collection.html',
                            collection=collection,
+                           url=url_for('.synapse_redirect'),
                            table=df_cut.to_html(index=False,
                                                 escape=False,
                                                 max_rows=2000),
