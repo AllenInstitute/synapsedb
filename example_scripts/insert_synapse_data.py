@@ -9,10 +9,10 @@ import argschema
 
 example_parameters = {
     "dataset": "M247514_Rorb_1",
-    "volume": "Site3",
-    "synapse_collection_name": "glut_synapses_v51",
-    "synapse_collection_type": "automatic annotation",
-    "synapse_file": "/nas3/data/M247514_Rorb_1/processed/Site3Align2Stacks/deep_synapses51a_global.json"
+    "volume": "Take2Site3",
+    "synapse_collection_name": "EM Synapses",
+    "synapse_collection_type": "manual annotation",
+    "synapse_file": "/nas3/data/M247514_Rorb_1/annotation/m247514_Take2Site3Annotation_completed_Feb2018_MN_global.json"
 }
 
 

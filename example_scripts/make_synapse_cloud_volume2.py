@@ -5,30 +5,24 @@ from sqlalchemy.sql.expression import or_, any_
 from sqlalchemy import func
 from synapsedb import db
 import cloudvolume
-from synapsedb.synapses.postgis import ST_3DExtent
+from synapsedb.synapses.postgis import ST_3DExtent, ST_XMin, ST_YMin, ST_ZMin, ST_ZMax, ST_XMax, ST_YMax
 from synapsedb.synapses.controllers import get_box_as_array
 from synapsedb.synapses.models import Synapse
 from synapsedb.ratings.models import Rating, ClassificationType
 import cv2
 import numpy as np
-import tifffile
 
 example_parameters = {
-    "scale": "0.03125",
-    "output_label_file": "/nas5/label_test.tiff",
-    "output_mask_file": "/nas5/mask_test.tiff",
     "synapse_collection_id": 2,
     "rating_source_id": 24,
     "cv_for_bounds": "file:///nas3/data/M247514_Rorb_1/processed/Site3Align2Stacks/cv_Site3Align2_EM_clahe_mm",
-    "cv_outputs": "file:///nas3/data/M247514_Rorb_1/processed/Site3Align2Stacks/cv_synapses",
-    "rating_conditions": [{
-        "classification_type": "GABA",
-        "rating": False
-    },
+    "cv_output": "file:///nas3/data/M247514_Rorb_1/processed/Site3Align2Stacks/cv_synapses",
+    "cv_mask": "file:///nas3/data/M247514_Rorb_1/processed/Site3Align2Stacks/cv_mask",
+    "rating_conditions": [
         {
-        "classification_type": "Synapse",
-        "rating": True
-    }]
+            "classification_type": "Synapse",
+            "rating": True
+        }]
 }
 
 
@@ -40,13 +34,12 @@ class RatingRequirements(argschema.schemas.DefaultSchema):
 
 
 class MaterializeSynapseSparseGroundTruthParameters(argschema.ArgSchema):
-    scale = argschema.fields.Float(required=True, description="synapse float")
-    cv_for_bounds = argschema.fields.String(required=True, description="path to cloud volume to use for base metadata")
-    cv_output = argschema.fields.String(required=True, description="path to cloud volume to save annotations into")
-    output_label_file = argschema.fields.OutputFile(
-        required=True, description="path to save label file")
-    output_mask_file =  argschema.fields.OutputFile(
-        required=True, description="path to save mask file")
+    cv_for_bounds = argschema.fields.String(
+        required=True, description="path to cloud volume to use for base metadata")
+    cv_output = argschema.fields.String(
+        required=True, description="path to cloud volume to save annotations into")
+    cv_mask = argschema.fields.String(
+        required=True, description="path to cloud volume to save mask region into")
     synapse_collection_id = argschema.fields.Integer(
         required=True, description="id of synapse collection")
     rating_source_id = argschema.fields.Integer(
@@ -108,34 +101,49 @@ def construct_filters(rating_condition):
     return (filter, inverse_filter)
 
 
-def paint_synapse_masks(label, mask, synapses, mins, scale, in_class=True):
+def bound_box_3d(multPolygon):
+    (xmin, ymin, xmax, ymax) = multPolygon.bounds
+    xmin = int(xmin)
+    ymin = int(ymin)
+    ymax = int(ymax)
+    xmax = int(xmax)
+    zvals = np.array([int(poly.exterior.coords[0][2])
+                      for poly in multPolygon.geoms])
+    zmin = np.min(zvals)
+    zmax = np.max(zvals)
+    return (xmin, ymin, zmin, xmax, ymax, zmax)
+
+
+def paint_synapses(label, synapses):
     for synapse, count in synapses:
+        print(synapse.id)
         multPolygon = shape.to_shape(synapse.areas)
+
+        (xmin, ymin, zmin, xmax, ymax, zmax) = bound_box_3d(multPolygon)
+        depth = zmax - zmin + 1
+        width = xmax - xmin + 1
+        height = ymax - ymin + 1
+        patch = np.zeros((depth, height, width), np.uint8)
+
         for poly in multPolygon.geoms:
             exterior = poly.exterior
             z = int(exterior.coords[0][2])
-            label_patch = np.zeros(label.shape[1:], dtype=np.uint8)
-            mask_patch = np.zeros(label.shape[1:], dtype=np.uint8)
-            path = scale * (exterior.xy - mins[0:2, np.newaxis])
-            if in_class:
-                label_patch = cv2.fillPoly(
-                    label_patch, [np.int64(path.T)], 1)
-            mask_patch = cv2.fillPoly(
-                mask_patch, [np.int64(path.T)], 1)
+            mins = np.array([xmin, ymin])
+            path = (exterior.xy - mins[:, np.newaxis])
+            patch[z - zmin, :, :] = cv2.fillPoly(
+                patch[z - zmin, :, :], [np.int64(path.T)], 1)
 
             for interior in poly.interiors:
-                path = scale * (interior.xy - mins[0:2, np.newaxis])
-                if in_class:
-                    label_patch = cv2.fillPoly(
-                        label_patch, [np.int64(path.T)], not in_class)
-                mask_patch = cv2.fillPoly(
-                    mask_patch, [np.int64(path.T)], 0)
-            mask[z, :, :] += mask_patch
-            if in_class:
-                label[z, :, :] += label_patch
-            
-    return label, mask
+                path = (interior.xy - mins[:, np.newaxis])
 
+                patch[z - zmin, :, :] = cv2.fillPoly(
+                    patch[z - zmin, :, :], [np.int64(path.T)], 0)
+        patch=patch.transpose([2, 1, 0])
+        inc = np.uint64(patch) * synapse.id
+        a = label[xmin:xmax+1, ymin:ymax+1, zmin:zmax+1]
+        a[:, :, :, 0] *= (1 - patch)
+        a[:, :, :, 0] += inc
+        label[xmin:xmax+1, ymin:ymax+1, zmin:zmax+1] = a
 
 class MaterializeSynapseSparseGroundTruth(argschema.ArgSchemaParser):
     default_schema = MaterializeSynapseSparseGroundTruthParameters
@@ -143,6 +151,31 @@ class MaterializeSynapseSparseGroundTruth(argschema.ArgSchemaParser):
     def run(self):
         collection_id = self.args['synapse_collection_id']
         rating_source_id = self.args['rating_source_id']
+
+        cv = cloudvolume.CloudVolume(
+            self.args['cv_for_bounds'], mip=0, compress=True)
+        info = cv._fetch_info()
+
+        seginfo = cloudvolume.CloudVolume.create_new_info(
+            num_channels=1,
+            layer_type='segmentation',
+            data_type='uint64',  # Channel images might be 'uint8'
+            encoding='raw',  # raw, jpeg, compressed_segmentation are all options
+            # Voxel scaling, units are in nanometers
+            resolution=info['scales'][0]['resolution'],
+            # x,y,z offset in voxels from the origin
+            voxel_offset=info['scales'][0]['voxel_offset'],
+            mesh='mesh',
+            # Pick a convenient size for your underlying chunk representation
+            # Powers of two are recommended, doesn't need to cover image exactly
+            chunk_size=info['scales'][0]['chunk_sizes'][0],  # units are voxels
+            # e.g. a cubic millimeter dataset
+            volume_size=info['scales'][0]['size'],
+        )
+
+        cv_seg = cloudvolume.CloudVolume(self.args['cv_output'], mip=0,
+                                         info=seginfo, fill_missing=True, non_aligned_writes=True)
+        cv_seg.commit_info()
 
         filters = []
         inverse_filters = []
@@ -153,42 +186,8 @@ class MaterializeSynapseSparseGroundTruth(argschema.ArgSchemaParser):
 
         rating_query = get_has_all_rating_query(
             collection_id, rating_source_id, filters)
-        rating_false_query = get_has_any_rating_query(
-            collection_id, rating_source_id, inverse_filters)
 
-        box = Synapse.query.with_entities(ST_3DExtent(Synapse.areas))\
-            .filter_by(object_collection_id=collection_id).first()[0]
-
-        print(rating_query.count())
-        print(rating_false_query.count())
-        print(rating_query.first())
-        print(get_box_as_array(box))
-
-        #bounds = np.array(get_box_as_array(box))
-        #mins = bounds[0:3]
-        #maxs = bounds[3:]
-        scale = self.args['scale']
-        sizes = np.uint16(scale * (maxs - mins))
-        sizes[2] = maxs[2] - mins[2] + 1
-        sizes = np.flip(sizes, 0)
-        label = np.zeros(sizes, dtype=np.uint8)
-        mask = np.zeros(sizes, dtype=np.uint8)
-
-        label, mask = paint_synapse_masks(label, mask,
-                                          rating_false_query.all(),
-                                          mins,
-                                          scale,
-                                          in_class=False)
-
-        label, mask = paint_synapse_masks(label, mask,
-                                          rating_query.all(),
-                                          mins,
-                                          scale,
-                                          in_class=True)
-
-
-        tifffile.imsave(self.args['output_label_file'], label)
-        tifffile.imsave(self.args['output_mask_file'], mask)
+        paint_synapses(cv_seg, rating_query.all())
 
 
 if __name__ == '__main__':

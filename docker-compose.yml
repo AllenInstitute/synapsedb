@@ -6,6 +6,14 @@ services:
       - 80:80
     volumes:
       - ${PWD}/docker/docker_compose_config.py:/synapsedb/synapsedb/instance/dev_config.py
+      - ${PWD}/atbigdawg-nginx.conf:/etc/nginx/conf.d/flask-site-nginx.conf
+      - /nas3:/nas3:ro
+      - /nas5:/nas5:ro
+      - /nas2:/nas2:ro
+      - /nas:/nas:ro
+      - /nas4:/nas4:ro
+      - /nas6:/nas6:ro
+      - ${PWD}:/synapsedb
     links:
       - db
     depends_on:
@@ -18,7 +26,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - /mnt/SSD/postgresdata:/var/lib/postgresql/data
     healthcheck:
       test: "pg_isready -h localhost -p 5432 -q -U postgres"
       interval: 3s
@@ -27,6 +35,6 @@ services:
   adminer:
     image: adminer
     ports:
-      - 8080:8080
+      - 8089:8080
     links:
       - db

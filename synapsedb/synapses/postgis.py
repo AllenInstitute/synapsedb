@@ -46,3 +46,15 @@ class ST_YMax(GenericFunction):
 class ST_ZMax(GenericFunction):
     name = 'ST_ZMax'
     type = None
+
+class ST_3DMakeBox(GenericFunction):
+    name = 'ST_3DMakeBox'
+    type = None
+
+class ST_MakePoint(GenericFunction):
+    name = 'ST_MakePoint'
+    type = None
+
+class ST_Intersects(GenericFunction):
+    name = 'ST_Intersects'
+    type = None
